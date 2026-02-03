@@ -1,350 +1,587 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="description"
-        content="KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance.">
-  <meta name="keywords" content="Online Imitation Learning, Robotics Manipulation">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="When Would Vision-Proprioception Policies Fail in Robotic Manipulation?">
+    <title>When Would Vision-Proprioception Policies Fail in Robotic Manipulation?</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect width='1' height='1' fill='transparent'/></svg>">
+    <link rel="shortcut icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'><rect width='1' height='1' fill='transparent'/></svg>">
+    <link rel="stylesheet" href="./static/css/stylesheet.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+    <script src="https://unpkg.com/scrollreveal@4.0.0/dist/scrollreveal.min.js"></script>
+    <style>
+        /* Additional styles for video section and content */
+        .publication-video {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%;
+            overflow: hidden;
+            border-radius: 10px;
+            background: #000;
+            margin: 2rem 0;
+        }
 
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-PYVRSFMDRL"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
+        .publication-video video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
 
-    function gtag() {
-      dataLayer.push(arguments);
-    }
+        .experiment-videos-grid {
+            margin: 2rem 0;
+        }
 
-    gtag('js', new Date());
+        .experiment-video-item {
+            padding: 1rem;
+            background: var(--bg-secondary);
+            border-radius: 10px;
+            box-shadow: var(--shadow-light);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
 
-    gtag('config', 'G-PYVRSFMDRL');
-  </script>
+        .experiment-video-item:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
 
-  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
-        rel="stylesheet">
+        .experiment-video-item h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
 
-  <link rel="stylesheet" href="./static/css/bulma.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
-  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
-  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
-  <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
-  <link rel="stylesheet" href="./static/css/index.css">
-  <link rel="icon" href="./static/images/koi_icon.png">
+        .experiment-video-item video {
+            width: 100%;
+            border-radius: 10px;
+            display: block;
+            background: #000;
+            min-height: 200px;
+            object-fit: contain;
+        }
 
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-  <script defer src="./static/js/fontawesome.all.min.js"></script>
-  <script src="./static/js/bulma-carousel.min.js"></script>
-  <script src="./static/js/bulma-slider.min.js"></script>
-  <script src="./static/js/index.js"></script>
+        .interpolation-image {
+            width: 100%;
+            border-radius: 10px;
+            margin: 2rem 0;
+            box-shadow: var(--shadow-medium);
+        }
+
+        .content-section {
+            max-width: 900px;
+            margin: 0 auto;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+
+        .content-section p {
+            margin-bottom: 1.5rem;
+        }
+
+        .content-section h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 2rem 0 1rem 0;
+        }
+
+        .publication-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .publication-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+
+        .publication-venue {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .publication-authors {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .publication-authors a {
+            color: var(--accent-primary);
+            text-decoration: none;
+        }
+
+        .publication-authors a:hover {
+            text-decoration: underline;
+        }
+
+        .publication-links {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: 2rem 0;
+        }
+
+        .pub-link-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            text-decoration: none;
+            border-radius: 0.75rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 1px solid var(--border-primary);
+            box-shadow: var(--shadow-light);
+        }
+
+        .pub-link-button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-medium);
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        .author-affiliation {
+            font-size: 1rem;
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            line-height: 1.6;
+        }
+
+        .author-note {
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .bibtex-section {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 1rem;
+            margin: 2rem 0;
+        }
+
+        .bibtex-section pre {
+            background: var(--bg-primary);
+            padding: 1.5rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            border: 1px solid var(--border-primary);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .image-caption {
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+            font-style: italic;
+        }
+
+        .hero-section {
+            min-height: 0;
+            padding: 2rem 0 1.5rem;
+        }
+
+        #video.section {
+            padding-top: 1.5rem;
+        }
+    </style>
 </head>
+
 <body>
-
-<nav class="navbar" role="navigation" aria-label="main navigation">
-  <div class="navbar-brand">
-    <a role="button" class="navbar-burger" aria-label="menu" aria-expanded="false">
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-      <span aria-hidden="true"></span>
-    </a>
-  </div>
-  <div class="navbar-menu">
-    <div class="navbar-start" style="flex-grow: 1; justify-content: center;">
-      <a class="navbar-item" href="https://gewu-lab.github.io//">
-      <span class="icon">
-          <i class="fas fa-home"></i>
-      </span>
-      </a>
+    <!-- Scroll Progress Indicator -->
+    <div class="scroll-indicator">
+        <div class="scroll-progress" id="scrollProgress"></div>
     </div>
 
-  </div>
-</nav>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#home" class="nav-link">Home</a>
+            <a href="#video" class="nav-link">Video</a>
+            <a href="#abstract" class="nav-link">Abstract</a>
+            <a href="#introduction" class="nav-link">Introduction</a>
+            <a href="#experiments" class="nav-link">Experiments</a>
+            <a href="#conclusion" class="nav-link">Conclusion</a>
+            <!-- <a href="#bibtex" class="nav-link">BibTeX</a> -->
+        </div>
+    </nav>
 
-
-<section class="hero">
-  <div class="hero-body">
-    <div class="container is-max-desktop">
-      <div class="columns is-centered">
-        <div class="column has-text-centered">
-          <h1 class="title is-2 publication-title">KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance</h1>
-          <p class="is-size-4" href="">CoRL 2024</p>
-          <div class="is-size-5 publication-authors">
-            <span class="author-block">
-              <a href="https://github.com/JingxianLu/" target="_blank">Jingxian Lu</a><sup>1,*</sup>,</span>
-            <span class="author-block">
-              <a href="https://xwinks.github.io/" target="_blank">Wenke Xia</a><sup>1,2,*,†</sup>,</span>
-            <span class="author-block">
-              <a href="https://scholar.google.es/citations?user=dasL9V4AAAAJ&hl=zh-CN/" target="_blank">Dong Wang</a><sup>2,‡</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?hl=zh-CN&user=cw3EaAYAAAAJ&view_op=list_works&sortby=pubdate" target="_blank">Zhigang Wang</a><sup>2</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=DQB0hqwAAAAJ&hl=zh-CN" target="_blank">Bin Zhao</a><sup>2,3</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://dtaoo.github.io" target="_blank">Di Hu</a><sup>1,‡</sup>,
-            </span>
-            <span class="author-block">
-              <a href="https://scholar.google.com/citations?user=ahUibskAAAAJ&hl=en&oi=ao" target="_blank">Xuelong Li</a><sup>2,4</sup>
-            </span>
-          </div>
-
-
-          <div class="is-size-5 publication-authors">
-            <span class="author-block"><sup>1</sup>Gaoling School of Artificial Intelligence, Renmin University of China</span>
-            <span class="author-block"><sup>2</sup>Shanghai Artificial Intelligence Laboratory</span>
-            <span class="author-block"><sup>3</sup>Northwestern Polytechnical University</span>
-            <span class="author-block"><sup>4</sup>Institute of Artificial Intelligence, China Telecom Corp Ltd</span>
-          </div>
-
-          <div class="is-size-7">
-            <span>* Equal contribution, † work is done during internship at Shanghai Artificial Intelligence Laboratory, ‡ Corresponding author</span>
-          </div>
-
-          <div class="column has-text-centered">
-            <div class="publication-links">
-              <!-- PDF Link. -->
-              <span class="link-block">
-                <a href="https://arxiv.org/pdf/2408.02912"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fas fa-file-pdf"></i>
-                  </span>
-                  <span>Paper</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://arxiv.org/abs/2408.02912"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="ai ai-arxiv"></i>
-                  </span>
-                  <span>arXiv</span>
-                </a>
-              </span>
-              <span class="link-block">
-                <a href="https://github.com/GeWu-Lab/Keystate_Online_Imitation"
-                   class="external-link button is-normal is-rounded is-dark">
-                  <span class="icon">
-                      <i class="fab fa-github"></i>
-                  </span>
-                  <span>Code</span>
-                  </a>
-              </span>
+    <!-- Main Container -->
+    <main class="main-container">
+        <!-- Hero Section / Publication Header -->
+        <section id="home" class="hero-section">
+            <div class="hero-content" style="grid-template-columns: 1fr;">
+                <div class="publication-header">
+                    <h1 class="publication-title">When Would Vision-Proprioception Policies Fail in Robotic Manipulation?</h1>
+                    <p class="publication-venue">International Conference on Learning Representations (ICLR) 2026</p>
+                    <div class="publication-authors">
+                        <span class="author-block">
+                            <a href="https://github.com/JingxianLu/" target="_blank">Jingxian Lu</a><sup>1,*</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://xwinks.github.io/" target="_blank">Wenke Xia</a><sup>1,*</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a>Yuxuan Wu</a><sup>2</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://scholar.google.cz/citations?user=OUXS8doAAAAJ" target="_blank">Zhiwu Lu</a><sup>1</sup>,
+                        </span>
+                        <span class="author-block">
+                            <a href="https://scholar.google.cz/citations?user=F7bvTOEAAAAJ" target="_blank">Di Hu</a><sup>1,†</sup>
+                        </span>
+                    </div>
+                    <div class="author-affiliation">
+                        <span class="author-block"><sup>1</sup>Gaoling School of Artificial Intelligence, Renmin University of China</span><br>
+                        <span class="author-block"><sup>2</sup>School of Artificial Intelligence, Beihang University</span><br>
+                    </div>
+                    <div class="author-note">
+                        <span>* Equal contribution, † Corresponding author</span>
+                    </div>
+                    <div class="publication-links">
+                        <a href="https://openreview.net/forum?id=2RIqqNqALN&noteId=NwdhXObvoO" target="_blank" class="pub-link-button">
+                            <i class="fas fa-file-pdf"></i>
+                            <span>Paper</span>
+                        </a>
+                        <a href="https://github.com/GeWu-Lab/Gradient_Adjustment_with_Phase-guidance" target="_blank" class="pub-link-button">
+                            <i class="fab fa-github"></i>
+                            <span>Code</span>
+                        </a>
+                    </div>
+                </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        </section>
 
-<!-- Experiment videos -->
-<section class="hero is-light is-small">
-  <div class="hero-body">
-    <div class="container">
-      <div id="results-carousel" class="carousel results-carousel">
-        <<div class="item item-cube">
-          <video poster="" id="cube" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/cube.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-tape">
-          <video poster="" id="tape" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/tape.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-rag">
-          <video poster="" id="rag" autoplay controls muted loop playsinline height="100%">
-            <source src="./static/videos/rag.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-bin">
-          <video poster="" id="bin" autoplay controls muted loop playsinline height=8px>
-            <source src="./static/videos/bin-picking-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-button">
-          <video poster="" id="button_press" autoplay controls muted loop playsinline height=8px>
-            <source src="./static/videos/button-press-topdown-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-drawer_open">
-          <video poster="" id="drawer_open" autoplay controls muted loop playsinline height="30%">
-            <source src="./static/videos/drawer-open-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-drawer_close">
-          <video poster="" id="drawer_close" autoplay controls muted loop playsinline height="30%">
-            <source src="./static/videos/drawer-close-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-door_open">
-          <video poster="" id="door_open" autoplay controls muted loop playsinline height="30%">
-            <source src="./static/videos/door-open-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-        <div class="item item-door_unlock">
-          <video poster="" id="door_unlock" autoplay controls muted loop playsinline height="30%">
-            <source src="./static/videos/door-unlock-v2.mp4" type="video/mp4">
-          </video>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End experiment videos -->
+        <!-- Video Section -->
+        <section id="video" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Video</h2>
+            </div>
+            <div class="content-section">
+                <div class="publication-video">
+                    <video id="intro-video" autoplay controls muted playsinline>
+                        <source src="./static/videos/demo.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </section>
 
-<section class="section">
-  <div class="container is-max-desktop">
-    <!-- Abstract. -->
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Abstract</h2>
-        <div class="content has-text-justified">
-          <p>
-            Online Imitation Learning struggles with the gap between extensive online exploration space and limited expert trajectories, hindering efficient exploration due to inaccurate reward estimation.
-            Inspired by the findings from cognitive neuroscience, we hypothesize that an agent could estimate precise task-aware reward for efficient online exploration, through decomposing the target task into the objectives of "what to do" and the mechanisms of "how to do".
-            In this work, we introduce the hybrid Key-state guided Online Imitation (KOI) learning method, which leverages the integration of semantic and motion key states as guidance for reward estimation.
-            Initially, we utilize visual-language models to extract semantic key states from expert trajectory, indicating the objectives of "what to do". 
-            Within the intervals between semantic key states, optical flow is employed to capture motion key states to understand the mechanisms of "how to do".
-            By integrating a thorough grasp of hybrid key states, we refine the trajectory-matching reward computation, accelerating online imitation learning by task-aware exploration.
-            We evaluate not only the success rate of the tasks in the Meta-World and LIBERO environments, but also the trend of variance during online imitation learning, proving that our method is more sample efficient. We also conduct real-world robotic manipulation experiments to validate the efficacy of our method, demonstrating the practical applicability of our KOI method. 
-          </p>
+        <!-- Abstract Section -->
+        <section id="abstract" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Abstract</h2>
+            </div>
+            <div class="content-section">
+                <p>
+                    Proprioceptive information is critical for precise servo control by providing real-time robotic states. Its collaboration with vision is highly expected to enhance performances of the manipulation policy in complex tasks. However, recent studies have reported <i>inconsistent observations</i> on the generalization of vision-proprioception policies. 
+                    In this work, we investigate this by conducting temporally controlled experiments. We found that during task sub-phases that robot's motion transitions, which require target localization, the vision modality of the vision-proprioception policy plays a limited role. Further analysis reveals that the policy naturally gravitates toward concise proprioceptive signals that offer faster loss reduction when training, thereby dominating the optimization and suppressing the learning of the visual modality during motion-transition phases. 
+                    To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm that adaptively modulates the optimization of proprioception, enabling dynamic collaboration within the vision-proprioception policy. Specifically, we leverage proprioception to capture robotic states and estimate the probability of each timestep in the trajectory belonging to motion-transition phases. During policy learning, we apply fine-grained adjustment that reduces the magnitude of proprioception's gradient based on estimated probabilities, leading to robust and generalizable vision-proprioception policies. 
+                    The comprehensive experiments demonstrate GAP is applicable in both simulated and real-world environments, across one-arm and dual-arm setups, and compatible with both conventional and Vision-Language-Action models. We believe this work can offer valuable insights into the development of vision-proprioception policies in robotic manipulation.
+                </p>
+            </div>
+        </section>
+
+        <!-- Introduction Section -->
+        <section id="introduction" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Introduction</h2>
+            </div>
+            <div class="content-section">
+                <p>
+                    Proprioceptive information has long been recognized as a cornerstone of low-level robotic control, enabling smooth motor behavior through immediate access to the robot's internal state. This capability is especially critical in tasks requiring high accuracy and fast correction, such as posture control and locomotion.
+                    In recent years, there has been growing interest in introducing proprioception to learning-based manipulation. Despite the expectations that its inclusion will empower manipulation policies to maintain precision and robustness across various scenarios, existing works have reported <em>inconsistent observations</em>: HPT demonstrated clear improvements under the joint utilization of vision and proprioception, while Octo observed policies trained with additional proprioception seemed generally worse than vision-only policies. This discrepancy exposes a critical obstacle to understanding: <strong>when vision-proprioception policies would fail in robotic manipulation?</strong>
+                </p>
+                
+                <figure style="margin: 2rem 0;">
+                    <img src="./static/images/teaser.svg" class="interpolation-image" alt="Generalization of vision-proprioception policies" style="width: 100%;">
+                    <figcaption class="image-caption" style="text-align: left;">Figure 1: The generalization of vision-proprioception policies. (left) Vision-Proprioception policies perform 15.8% worse than Vision-only policies. (right) We explore this through intervening the task execution of vision-only policy during different periods, by switching to vision-proprioception policy. Such intervention has minimal impact during motion-consistent phases like "move forward". However, during motion-transition phases like "locate base" and "assemble them", switching leads to noticeable degradation, indicating the vision modality fails to take effect during these phases.</figcaption>
+                </figure>
+
+                <p>
+                    Extensive prior studies have revealed that the importance of visual and proprioceptive information could change over time within manipulation, which is referred to as <em>Modality Temporality</em>.
+                    For example, during motion-consistent phases where the robot performs ongoing movements, the policy can benefit more from proprioceptive signals. In contrast, during the transition intervals where the robot's motion shifts, it is required to rely more on visual cues for accurate target localization.
+                    To verify whether the vision-proprioception policy exhibits such collaboration, we conduct an intervention experiment in the controlled simulation environment. Concretely, we execute the "assembly" task using the vision-only policy, but for a specific 10-timestep period, we replace executed actions with those predicted by the vision-proprioception policy under the same observations. As shown in the Figure 1 (right), the intervention brings minimal impact during motion-consistent phases like "move forward"; during motion-transition phases like "locate base" and "assemble them", the switching leads to noticeable degradation.
+                    It suggests that the vision modality of the vision-proprioception policy fails to take effect during motion-transition phases.
+                </p>
+
+                <p>
+                    We further investigate the underlying cause from an optimization perspective. During motion-transition phases, visual cues tend to be subtle and may only differ at the pixel level. As a result, the vision-proprioception policy naturally gravitates toward the more concise proprioceptive signals to minimize the training loss, thereby dominating the optimization. This dominance suppresses the learning of the vision modality and ultimately leads to under-utilized visual information during motion-transition phases.
+                </p>
+
+                <p>
+                    To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm that adaptively modulates the optimization of proprioception, enabling dynamic collaboration between vision and proprioception.
+                    Specifically, we first define the motion of the robot using concise proprioception signals and segment the trajectory into motion-consistent phases. Robot's motion transits within the intervals between these phases, we thus employ a temporal network like LSTM to model transition processes. It helps eliminate potential errors introduced by the segmentation and estimates the probability that each timestep belongs to motion-transition phases.
+                    During policy learning, we guide the vision-proprioception policy to focus on essential visual cues of motion-transition phases, by applying fine-grained gradient adjustment that reduces the magnitude of proprioception's gradient.
+                    Our GAP algorithm facilitates the vision-proprioception policy to effectively utilize proprioception without suppressing the learning of visual modality.
+                </p>
+            </div>
+        </section>
+
+        <!-- Experiments Section -->
+        <section id="experiments" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Experiments</h2>
+            </div>
+
+            <div class="content-section">
+
+
+                
+                <p>We validate the versatility and effectiveness of our proposed Gradient Adjustment with Phase-guidance (GAP) algorithm through a series of question-driven experiments. The evaluations comprehensively cover a wide range of manipulation tasks, including articulated object manipulation, rotation-sensitive tasks, as well as long-horizon and contact-rich tasks.</p>
+
+                <p>We select two simulated environments as our benchmarks: Meta-World and RoboSuite. Tasks in Meta-World are relatively simple, featuring a 4-dimensional action space that includes the gripper's position and its opening degree, while tasks in RoboSuite involve complex scenarios, longer task sequence horizons and richer physical interactions, with the action space further including the orientation of the gripper. For real-world experiments, we use a 6-DoF xArm 6 robotic arm equipped with a Robotiq gripper. Moreover, we utilize the open-source Cobot Magic platform to support tasks that require dual-arm collaboration. In all tasks, the initial position of target object varies randomly in each validation, while the initial position of gripper remains fixed. Tasks in simulation and real-world are evaluated with 100 and 20 rollouts, respectively.</p>
+
+                <p>We conducted comparative analyses between our algorithm and the following baselines:</p>
+                <ul>
+                    <li><a href="https://arxiv.org/abs/2408.01366" target="_blank" class="link-highlight">MS-Bot</a>: this method uses state tokens with stage information to guide the dynamic collaboration of modalities within multi-modality policy.</li>
+                    <li>Auxiliary Loss (Aux): following <a href="https://arxiv.org/abs/2406.10454" target="_blank" class="link-highlight">HumanPlus</a>, we use visual feature to predict the next frames as an auxiliary loss, which tries to enhance the vision modality.</li>
+                    <li>Mask: to prevents the overfitting to specific modality, <a href="https://arxiv.org/abs/2410.07864" target="_blank" class="link-highlight">RDT-1B</a> randomly and independently masks each uni-modal input with a certain probability during encoding. We adapt the algorithm by masking only proprioception modality instead.</li>
+                </ul>
+
+                <div style="margin: 2rem 0;">
+                    <img src="./static/images/comparative.png" class="interpolation-image" alt="Comparative Results"/>
+                    <figcaption class="image-caption" style="text-align: left;">Table 1: Comparisons with other methods in both simulated and real-world environments. Average success rate and standard deviation of simulation results are calculated over 5 seeds. The vision-proprioception policies after our gradient adjustment significantly outperform other methods.</figcaption>
+                </div>
+
+                <p>Results in Table 1 demonstrate that vision-proprioception policies with our GAP applied outperform vision-only policies and other methods. By adaptively applying fine-grained gradient adjustment during motion-transition phases, GAP enables the vision-proprioception policy to effectively leverage these two modalities and outperform both the vision-only policy and other methods.</p>
+
+                <!-- Experiment Videos Grid -->
+                <div class="experiment-videos-grid">
+                    <div class="video-row video-row-landscape" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-bottom: 1.5rem;">
+                        <div class="experiment-video-item">
+                            <h4>handover (4x)</h4>
+                            <video autoplay controls muted playsinline style="aspect-ratio: 1248/720;">
+                                <source src="./static/videos/handover4x.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="experiment-video-item">
+                            <h4>put thermos into bag (4x)</h4>
+                            <video autoplay controls muted playsinline style="aspect-ratio: 1248/720;">
+                                <source src="./static/videos/cup2bag4x.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                    <div class="video-row video-row-portrait" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; justify-items: center;">
+                        <div class="experiment-video-item" style="max-width: 300px;">
+                            <h4>press button</h4>
+                            <video autoplay controls muted playsinline style="aspect-ratio: 720/1280; width: 100%; max-height: 380px; object-fit: contain;">
+                                <source src="./static/videos/press_button.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="experiment-video-item" style="max-width: 300px;">
+                            <h4>cube</h4>
+                            <video autoplay controls muted playsinline style="aspect-ratio: 720/1280; width: 100%; max-height: 380px; object-fit: contain;">
+                                <source src="./static/videos/pick_place.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                        <div class="experiment-video-item" style="max-width: 300px;">
+                            <h4>use rag to sweep table (4x)</h4>
+                            <video autoplay controls muted playsinline style="aspect-ratio: 720/1280; width: 100%; max-height: 380px; object-fit: contain;">
+                                <source src="./static/videos/rag_sweep4x.mp4" type="video/mp4">
+                            </video>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </section>
+
+        <!-- Conclusion Section -->
+        <section id="conclusion" class="section">
+            <div class="section-header">
+                <h2 class="section-title">Conclusion</h2>
+            </div>
+            <div class="content-section">
+                <p>
+                    In this work, we illustrate that the vision modality of the vision-proprioception policy plays a limited role during motion-transition phases due to suppression. To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm, enabling dynamic collaboration between vision and proprioception within vision-proprioception policy. We believe this work can offer valuable insights into the development of vision-proprioception policies for robotic manipulation.
+                </p>
+            </div>
+        </section>
+
+        <!-- BibTeX Section -->
+        <!-- <section id="bibtex" class="section">
+            <div class="section-header">
+                <h2 class="section-title">BibTeX</h2>
+            </div>
+            <div class="content-section">
+                <div class="bibtex-section">
+                    <pre><code>
+
+                    </code></pre>1
+                </div>
+            </div>
+        </section> -->
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-left">
+                <p>Updated 2024</p>
+            </div>
+            <div class="footer-right">
+                <p>Thanks <a href="https://jonbarron.info" target="_blank">Jon Barron</a> for the original template inspiration</p>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
+    </footer>
 
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Introduction</h2>
-        <div class="content has-text-justified">
-            <p>
-                Online Imitation Learning has achieved significant success in various robotic manipulation tasks, driven by a reward function informed by expert demonstrations, is able to formulate policies via exploration.
-                However, the considerable gap between substantial online exploration space and limited expert trajectories challenges the estimation of exploration reward, which hinders the efficiency of online imitation learning in intricate environments.
-            </p>
-            <p>
-                Inspired by the findings from cognitive neuroscience, we propose the hybrid Key-state guided Online Imitation (KOI) learning method, which effectively extracts the semantic and motion key states from expert trajectory to refine the reward estimation.
-            </p>
-            <div class="column ">
-                <img src="./static/images/pipeline.png"
-                class="interpolation-image"
-                alt="Interpolate start reference image."/>
-                <center>
-                  <p>Figure 1: The pipeline of our hybrid Key-state guided Online Imitation (KOI) learning method.</p>
-                </center>
-              </div>
-            <p>
-                As demonstrated in Figure 1, we initially utilize the rich world knowledge of visual-language models to extract semantic key states from expert trajectory, clarifying the objectives of "what to do". Within intervals between semantic key states, optical flow is employed to identify essential motion key states to comprehend the dynamic transition to the subsequent semantic key state, indicating "how to do" the target task. 
-                By integrating both types of key states, we adjust the importance weight of expert trajectory states in OT-based reward estimation to empower efficient online imitation learning.
-            </p>
-        </div>
-      </div>
-    </div>
-  </div>
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">
+        <i class="fas fa-arrow-up"></i>
+    </button>
 
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Experiments</h2>
-        <div class="content has-text-justified">
-          <h3>Simulation</h3>
-          <p>
-            To comprehensively evaluate our key-state guided method, we conducted experiments across 6 manipulation tasks from the <a href="https://meta-world.github.io/">Meta-world</a> and 3 more complex tasks from the <a href="https://libero-project.github.io/main.html">LIBERO</a>.
-            In offline imitation phase, we collected 1 demonstration and 50 demonstrations per task in the Meta-world and LIBERO to train a Behavior Cloning (BC) policy, respectively. For online imitation phase, we loaded pretrained BC policy and initialized critic network.
-          </p>
-          <p>
-            We compare our method with other methods:
-            <p>1. <b>BC</b>, which represents the pretrained behavior cloning policy.</p>
-            <p>2. <b>UVD</b>, which utilize pretrained visual encoder R3M for task decomposition in image-goal reinforcement learning.</p>
-            <p>3. <b>RoboCLIP</b>, which leverages the pretrained video encoder S3D to estimate the task-aware reward function instead of the reward of each state.</p>
-            <p>4. <b>ROT</b>, which employs Optimal Transport to estimate the distance between exploration trajectory and expert demonstrations, which focus on fine-grained trajectory matching.</p>
-          </p>
-          <div class="column ">
-            <img src="./static/images/comparative.png"
-            class="interpolation-image"
-            alt="Interpolate start reference image."/>
-            <center>
-              <p>Figure 2: The experiment results on Meta-World and LIBERO, with exploration 5 x 1e5 and 2 x 1e5 timesteps respectively. The shaded region represents normalized standard deviation across 3 seeds.</p>
-            </center>
-          </div>
-          <p>
-            As shown in Figure 2, our KOI method achieves more efficient online imitation learning in all tasks by leveraging a thorough comprehension of both semantic and motion key states, providing a distinct advantage.
-            Furthermore,  KOI not only yields more efficient learning but also maintains greater stability, benefiting from the comprehensive guidance from the hybrid key states.
-          </p>
-        </div>
+    <script>
+        // Smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
 
-        <div class="content has-text-justified">
-          <h3>Real-world</h3>
-          <div class="column ">
-            <img src="./static/images/real-world.png"
-            class="interpolation-image"
-            alt="Interpolate start reference image."/>
-            <center>
-              <p>Table 1: The demonstrations and comparative results of our 3 real-world robotic manipulation tasks. The initial state of each task is represented in a lighter shade, while the completed state is depicted in a darker shade. The results indicate that our method achieves more efficient exploration and better overall performance.</p>
-            </center>
-          </div>
-          <p>
-            As shown in Table 1, We conduct real-world experiments using an XARM robot equipped with a Robotiq gripper. To comprehensively evaluate the performance, the entire imitation learning is divided into three stages: offline, online, and test. For each task, we collect 10 human expert demonstrations to train the Behavior Cloning (BC) policy during the offline phase and use only 1 expert demonstration to estimate reward during the online phase. All the evaluations are conducted at varying initial object positions.
-            Our method utilizes task-aware information to improve the reward estimation, thereby enhancing the agent's exploration efficiency and performance.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
+        // Scroll Progress Indicator
+        const scrollProgress = document.getElementById('scrollProgress');
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.pageYOffset;
+            const docHeight = document.body.offsetHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            scrollProgress.style.width = scrollPercent + '%';
+        });
 
-  <div class="container is-max-desktop">
-    <div class="columns is-centered has-text-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Conclusion</h2>
-        <div class="content has-text-justified">
-          <p>
-            In this work, we propose the hybrid Key-state guided Online Imitation (KOI) learning method, which extracts the semantic and motion key states for trajectory-matching reward estimation for online imitation learning. 
-            By decomposing the target task into the objectives of "what to do" and the mechanisms of "how to do", we refine the trajectory-matching reward estimation to encourage task-aware exploration for efficient online imitation learning. The results from simulation environments and real-world scenarios prove the efficiency of our method.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
+        // Enhanced Scroll animations with ScrollReveal
+        ScrollReveal().reveal('.hero-content', { 
+            duration: 1000,
+            distance: '50px',
+            origin: 'top',
+            easing: 'cubic-bezier(0.5, 0, 0, 1)'
+        });
 
-<!-- bibtex -->
-<section class="section is-light" id="BibTeX">
-  <div class="container is-max-desktop content">
-    <h2 class="title">BibTeX</h2><pre><code>@article{lu2024koi,
-      title={KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance},
-      author={Lu, Jingxian and Xia, Wenke and Wang, Dong and Wang, Zhigang and Zhao, Bin and Hu, Di and Li, Xuelong},
-      journal={arXiv preprint arXiv:2408.02912},
-      year={2024}
-    }</code></pre></div>
-</section>
-<!-- End bibtex -->
+        ScrollReveal().reveal('.publication-video', { 
+            duration: 1000,
+            distance: '50px',
+            origin: 'bottom',
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
 
-<footer class="footer">
-  <div class="container">
-    <div class="content has-text-centered">
-      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
-        <i class="fab fa-github"></i>
-      </a>
-    </div>
-    <div class="columns is-centered">
-      <div class="column is-8">
-        <div class="content">
-          <p>
-            This website is licensed under a <a rel="license"
-                                                href="http://creativecommons.org/licenses/by-sa/4.0/">Creative
-            Commons Attribution-ShareAlike 4.0 International License</a>.
-          </p>
-        </div>
-      </div>
-    </div>
-  </div>
-</footer>
+        ScrollReveal().reveal('.experiment-video-item', { 
+            duration: 800,
+            distance: '30px',
+            origin: 'bottom',
+            interval: 100,
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
 
+        ScrollReveal().reveal('.interpolation-image', { 
+            duration: 800,
+            distance: '30px',
+            origin: 'left',
+            easing: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+        });
+
+        // Section reveal on scroll
+        const sections = document.querySelectorAll('.section');
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const sectionObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, observerOptions);
+
+        sections.forEach(section => {
+            sectionObserver.observe(section);
+        });
+
+        // Scroll to top button
+        const scrollTopBtn = document.getElementById('scrollTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollTopBtn.classList.add('show');
+            } else {
+                scrollTopBtn.classList.remove('show');
+            }
+        });
+
+        scrollTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+
+        // Active navigation highlighting
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Add loading animation
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+
+        // Enhanced hover effects for interactive elements
+        document.querySelectorAll('.experiment-video-item').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px) scale(1.02)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0) scale(1)';
+            });
+        });
+    </script>
 </body>
 </html>
