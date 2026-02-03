@@ -296,10 +296,10 @@
             </div>
             <div class="content-section">
                 <p>
-                    Proprioceptive information is critical for precise servo control by providing real-time robotic states. Its collaboration with vision is highly expected to enhance performances of the manipulation policy in complex tasks. However, recent studies have reported <i>inconsistent observations</i> on the generalization of vision-proprioception policies. 
-                    In this work, we investigate this by conducting temporally controlled experiments. We found that during task sub-phases that robot's motion transitions, which require target localization, the vision modality of the vision-proprioception policy plays a limited role. Further analysis reveals that the policy naturally gravitates toward concise proprioceptive signals that offer faster loss reduction when training, thereby dominating the optimization and suppressing the learning of the visual modality during motion-transition phases. 
-                    To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm that adaptively modulates the optimization of proprioception, enabling dynamic collaboration within the vision-proprioception policy. Specifically, we leverage proprioception to capture robotic states and estimate the probability of each timestep in the trajectory belonging to motion-transition phases. During policy learning, we apply fine-grained adjustment that reduces the magnitude of proprioception's gradient based on estimated probabilities, leading to robust and generalizable vision-proprioception policies. 
-                    The comprehensive experiments demonstrate GAP is applicable in both simulated and real-world environments, across one-arm and dual-arm setups, and compatible with both conventional and Vision-Language-Action models. We believe this work can offer valuable insights into the development of vision-proprioception policies in robotic manipulation.
+                    In this work, we found that during task sub-phases that robot's motion transitions, the vision modality of the vision-proprioception policy plays a limited role. Further analysis reveals that the policy naturally gravitates toward concise proprioceptive signals that offer faster loss reduction when training, thereby dominating the optimization and suppressing the learning of the visual modality during motion-transition phases. 
+                    To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm, leading to robust and generalizable vision-proprioception policies. 
+                    The comprehensive experiments demonstrate GAP is applicable in both simulated and real-world environments, across one-arm and dual-arm setups, and compatible with both conventional and Vision-Language-Action models.
+                    We believe this work can offer valuable insights into the development of vision-proprioception policies in robotic manipulation.
                 </p>
             </div>
         </section>
@@ -310,33 +310,19 @@
                 <h2 class="section-title">Introduction</h2>
             </div>
             <div class="content-section">
-                <p>
-                    Proprioceptive information has long been recognized as a cornerstone of low-level robotic control, enabling smooth motor behavior through immediate access to the robot's internal state. This capability is especially critical in tasks requiring high accuracy and fast correction, such as posture control and locomotion.
-                    In recent years, there has been growing interest in introducing proprioception to learning-based manipulation. Despite the expectations that its inclusion will empower manipulation policies to maintain precision and robustness across various scenarios, existing works have reported <em>inconsistent observations</em>: HPT demonstrated clear improvements under the joint utilization of vision and proprioception, while Octo observed policies trained with additional proprioception seemed generally worse than vision-only policies. This discrepancy exposes a critical obstacle to understanding: <strong>when vision-proprioception policies would fail in robotic manipulation?</strong>
-                </p>
-                
                 <figure style="margin: 2rem 0;">
                     <img src="./static/images/teaser.svg" class="interpolation-image" alt="Generalization of vision-proprioception policies" style="width: 100%;">
                     <figcaption class="image-caption" style="text-align: left;">Figure 1: The generalization of vision-proprioception policies. (left) Vision-Proprioception policies perform 15.8% worse than Vision-only policies. (right) We explore this through intervening the task execution of vision-only policy during different periods, by switching to vision-proprioception policy. Such intervention has minimal impact during motion-consistent phases like "move forward". However, during motion-transition phases like "locate base" and "assemble them", switching leads to noticeable degradation, indicating the vision modality fails to take effect during these phases.</figcaption>
                 </figure>
-
                 <p>
-                    Extensive prior studies have revealed that the importance of visual and proprioceptive information could change over time within manipulation, which is referred to as <em>Modality Temporality</em>.
-                    For example, during motion-consistent phases where the robot performs ongoing movements, the policy can benefit more from proprioceptive signals. In contrast, during the transition intervals where the robot's motion shifts, it is required to rely more on visual cues for accurate target localization.
-                    To verify whether the vision-proprioception policy exhibits such collaboration, we conduct an intervention experiment in the controlled simulation environment. Concretely, we execute the "assembly" task using the vision-only policy, but for a specific 10-timestep period, we replace executed actions with those predicted by the vision-proprioception policy under the same observations. As shown in the Figure 1 (right), the intervention brings minimal impact during motion-consistent phases like "move forward"; during motion-transition phases like "locate base" and "assemble them", the switching leads to noticeable degradation.
-                    It suggests that the vision modality of the vision-proprioception policy fails to take effect during motion-transition phases.
-                </p>
-
-                <p>
-                    We further investigate the underlying cause from an optimization perspective. During motion-transition phases, visual cues tend to be subtle and may only differ at the pixel level. As a result, the vision-proprioception policy naturally gravitates toward the more concise proprioceptive signals to minimize the training loss, thereby dominating the optimization. This dominance suppresses the learning of the vision modality and ultimately leads to under-utilized visual information during motion-transition phases.
-                </p>
-
-                <p>
+                    Figure 1 (right) suggests that the vision modality of the vision-proprioception policy fails to take effect during motion-transition phases.
                     To alleviate this, we propose the Gradient Adjustment with Phase-guidance (GAP) algorithm that adaptively modulates the optimization of proprioception, enabling dynamic collaboration between vision and proprioception.
-                    Specifically, we first define the motion of the robot using concise proprioception signals and segment the trajectory into motion-consistent phases. Robot's motion transits within the intervals between these phases, we thus employ a temporal network like LSTM to model transition processes. It helps eliminate potential errors introduced by the segmentation and estimates the probability that each timestep belongs to motion-transition phases.
-                    During policy learning, we guide the vision-proprioception policy to focus on essential visual cues of motion-transition phases, by applying fine-grained gradient adjustment that reduces the magnitude of proprioception's gradient.
-                    Our GAP algorithm facilitates the vision-proprioception policy to effectively utilize proprioception without suppressing the learning of visual modality.
                 </p>
+
+                <figure style="margin: 2rem 0;">
+                    <img src="./static/images/method.svg" class="interpolation-image" alt="The pipeline of Gradient Adjustment with Phase-guidance (GAP) algorithm." style="width: 100%;">
+                    <figcaption class="image-caption" style="text-align: left;">Figure 2: The pipeline of Gradient Adjustment with Phase-guidance (GAP) algorithm.</figcaption>
+                </figure>
             </div>
         </section>
 
@@ -346,13 +332,8 @@
                 <h2 class="section-title">Experiments</h2>
             </div>
 
-            <div class="content-section">
-
-
-                
-                <p>We validate the versatility and effectiveness of our proposed Gradient Adjustment with Phase-guidance (GAP) algorithm through a series of question-driven experiments. The evaluations comprehensively cover a wide range of manipulation tasks, including articulated object manipulation, rotation-sensitive tasks, as well as long-horizon and contact-rich tasks.</p>
-
-                <p>We select two simulated environments as our benchmarks: Meta-World and RoboSuite. Tasks in Meta-World are relatively simple, featuring a 4-dimensional action space that includes the gripper's position and its opening degree, while tasks in RoboSuite involve complex scenarios, longer task sequence horizons and richer physical interactions, with the action space further including the orientation of the gripper. For real-world experiments, we use a 6-DoF xArm 6 robotic arm equipped with a Robotiq gripper. Moreover, we utilize the open-source Cobot Magic platform to support tasks that require dual-arm collaboration. In all tasks, the initial position of target object varies randomly in each validation, while the initial position of gripper remains fixed. Tasks in simulation and real-world are evaluated with 100 and 20 rollouts, respectively.</p>
+            <div class="content-section">        
+                <p>We validate the versatility and effectiveness of our proposed GAP algorithm. The evaluations comprehensively cover a wide range of manipulation tasks, including articulated object manipulation, rotation-sensitive tasks, as well as long-horizon and contact-rich tasks.</p>
 
                 <p>We conducted comparative analyses between our algorithm and the following baselines:</p>
                 <ul>
@@ -365,8 +346,6 @@
                     <img src="./static/images/comparative.png" class="interpolation-image" alt="Comparative Results"/>
                     <figcaption class="image-caption" style="text-align: left;">Table 1: Comparisons with other methods in both simulated and real-world environments. Average success rate and standard deviation of simulation results are calculated over 5 seeds. The vision-proprioception policies after our gradient adjustment significantly outperform other methods.</figcaption>
                 </div>
-
-                <p>Results in Table 1 demonstrate that vision-proprioception policies with our GAP applied outperform vision-only policies and other methods. By adaptively applying fine-grained gradient adjustment during motion-transition phases, GAP enables the vision-proprioception policy to effectively leverage these two modalities and outperform both the vision-only policy and other methods.</p>
 
                 <!-- Experiment Videos Grid -->
                 <div class="experiment-videos-grid">
