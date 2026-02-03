@@ -1,88 +1,58 @@
-# KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance
+# When Would Vision-Proprioception Policies Fail in Robotic Manipulation?
 
-Authors: [Jingxian Lu](https://github.com/JingxianLu)\*, [Wenke Xia](https://xwinks.github.io/)\*, [Dong Wang](https://scholar.google.es/citations?user=dasL9V4AAAAJ&hl=zh-CN)‡, [Zhigang Wang](https://scholar.google.com/citations?hl=zh-CN&user=cw3EaAYAAAAJ&view_op=list_works&sortby=pubdate), [Bin Zhao](https://scholar.google.com/citations?user=DQB0hqwAAAAJ&hl=zh-CN), [Di Hu](https://dtaoo.github.io/)‡, [Xuelong Li](https://iopen.nwpu.edu.cn/info/1329/1171.htm)
+Authors: [Jingxian Lu](https://github.com/JingxianLu)\*, [Wenke Xia](https://xwinks.github.io/)\*, Yuxuan Wu, [Zhiwu Lu](https://scholar.google.cz/citations?user=OUXS8doAAAAJ), [Di Hu](https://scholar.google.cz/citations?user=F7bvTOEAAAAJ)†
 
-Accepted By: __2024 Conference on Robot Learning (CoRL)__
+Accepted By: __2026 International Conference on Learning Representations (ICLR)__
 
-Resources:[[Project Page](https://gewu-lab.github.io/Keystate_Online_Imitation/)],[[Arxiv](https://arxiv.org/abs/2408.02912)]
+Resources:[[Project Page](https://gewu-lab.github.io/Gradient_Adjustment_with_Phase-guidance/)], [[Paper](https://openreview.net/forum?id=2RIqqNqALN&noteId=NwdhXObvoO)]
 
 If you have any questions, please open an issue or send an email to jingxianlu1122@gmail.com.
 ___
 
 ## Introduction
 
-This is the PyTorch code of our paper: __KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance__.
+This is the PyTorch code of our paper: __When Would Vision-Proprioception Policies Fail in Robotic Manipulation?__
 
-In this work, we propose the hybrid Key-state guided Online Imitation (KOI) learning method, which estimates precise task-aware reward for efficient online exploration, through decomposing the target task into the objectives of `what to do` and the mechanisms of `how to do`.
+In this work, we investigate when vision-proprioception policies would fail in robotic manipulation by conducting temporally controlled experiments. We found that during task sub-phases that robot's motion transitions, which require target localization, the vision modality of the vision-proprioception policy plays a limited role. Further analysis reveals that the policy naturally gravitates toward concise proprioceptive signals that offer faster loss reduction when training, thereby dominating the optimization and suppressing the learning of the visual modality during motion-transition phases. 
 
 ![image](./pipeline.png)
 
-As shown, we initially utilize the rich world knowledge of visual-language models to extract semantic key states from expert trajectory, clarifying the objectives of `what to do`. Within intervals between semantic key states, optical flow is employed to identify essential motion key states to comprehend the dynamic transition to the subsequent semantic key state, indicating `how to do` the target task. By integrating both types of key states, we adjust the importance weight of expert trajectory states in OT-based reward estimation to empower efficient online imitation learning.
-
-
-
-## Download expert demonstrations, weights [[link]](https://drive.google.com/file/d/1WDkLMIG-Wb-UqoUOvJ8ADMKlLdtYF1jz/view?usp=drive_link)
-
-The link contains all expert demonstrations in our paper.
-
-Please set the `path/to/dir` portion of the `root_dir` path variable in `KOI/cfgs/metaworld_config.yaml` and `KOI/cfgs/libero_config.yaml` to the path of the this repository.
-
-Then, extract the files and place the `expert_demos` and `weights` folders in `${root_dir}/Keystate_Online_Imitation`.
-
+As shown, we propose the __Gradient Adjustment with Phase-guidance (GAP)__ algorithm that adaptively modulates the optimization of proprioception, enabling dynamic collaboration within the vision-proprioception policy. Specifically, we leverage proprioception to capture robotic states and estimate the probability of each timestep in the trajectory belonging to motion-transition phases. During policy learning, we apply fine-grained adjustment that reduces the magnitude of proprioception's gradient based on estimated probabilities, leading to robust and generalizable vision-proprioception policies.
 
 ## Setup
 
-This code is tested in Ubuntu 18.04, pytorch 1.12.1+cu113
+This code has been tested on Ubuntu 18.04 with PyTorch 2.1.0+cu121.
 
-__Install the requirements__
+__Create Environment__
 
-
-```
-pip install -r requirements.txt
-```
-
-If you have problem installing environment libraries [LIBERO](https://github.com/Lifelong-Robot-Learning/LIBERO), please refer to its official documents.
-
-For a fair comparison with [ROT](https://github.com/siddhanthaldar/ROT/), we conduct experiments in Meta-World suite they provided, which modified the simulation for pixel input. Please follow their instructions to setup Gym-Robotics and Meta-World libraries.  
-
-## Train
-__Meta-World__ 
-  
-The models of offline imitation are [provided](https://drive.google.com/file/d/1WDkLMIG-Wb-UqoUOvJ8ADMKlLdtYF1jz/view?usp=drive_link), or can be trained using:
-
-```
-python train_metaworld.py agent=bc_metaworld suite/metaworld_task=bin load_bc=false exp_name=bc
+```bash
+conda env create -f environment.yml
 ```
 
-To run keystate-guided online imitation:
+__Configuration__
 
-```
-python train_metaworld.py agent=koi_metaworld suite/metaworld_task=bin keyidx=[50,160] exp_name=koi
-```
+1. Update the corresponding paths in the `cfgs` directory.
+2. Copy `costdirection.py` to the `costs` folder in the ruptures library.
+3. Add the following import statement to `__init__.py` of ruptures to enable the custom cost function:
 
-The "keyidx" in this command indicates the indexes of semantic key-states of "bin-picking" task. As demonstrated in our paper, they can be extracted by VLMs like this [example](KOI/query_semantic.py), or assigned by users manually.
-
-__LIBERO__
-
-Similarly, to run the offline imitation in LIBERO suite:
-
-```
-python train_bc_libero.py agent=bc_libero suite/libero_task=plate num_demos=50 load_bc=false exp_name=bc
+```python
+from .costdirection import CostDirection
 ```
 
-For online imitation:
+## Training
 
-```
-python train_libero.py agent=koi_libero suite/libero_task=plate keyidx=[40,80] exp_name=koi
+Train the model using the following command:
+
+```bash
+python gap/gap.py task=assembly method=gap image=true proprio=true
 ```
 
-## Citation 
+You can configure the target task and input modalities through command-line arguments. The example above trains on the `assembly` task with both image and proprioception modalities.
 
-```
-@article{lu2024koi,
-  title={KOI: Accelerating Online Imitation Learning via Hybrid Key-state Guidance},
-  author={Lu, Jingxian and Xia, Wenke and Wang, Dong and Wang, Zhigang and Zhao, Bin and Hu, Di and Li, Xuelong},
-  journal={arXiv preprint arXiv:2408.02912},
-  year={2024}
-}
+## Evaluation
+
+Run inference on the trained model:
+
+```bash
+python gap/inference.py task=assembly method=gap image=true proprio=true
 ```

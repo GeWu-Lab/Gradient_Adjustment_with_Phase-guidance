@@ -1,6 +1,0 @@
-
-defaults:
-  - params
-  - _self_
-
-task_name: put_the_bowl_on_the_plate
